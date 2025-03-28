@@ -1,31 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/28 19:40:54 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/03/28 19:40:59 by bde-koni         ###   ########.fr       */
+/*   Created: 2024/10/08 17:39:52 by bde-koni          #+#    #+#             */
+/*   Updated: 2024/11/20 14:12:46 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdio.h>
+#include "libft.h"
 
-int	main()
+// FUNCTION: fills first n bytes of memory area
+// pointed to by s with constant byte c
+void	*ft_memset(void *s, int c, size_t n)
 {
-	int child_pid;
+	unsigned char	*str;
 
-	child_pid = 0;
-
-	child_pid = fork();
-	if (child_pid == 0)
+	str = s;
+	while (n > 0)
 	{
-		printf("hoi ik ben een child process");
+		*str = (unsigned char) c;
+		str++;
+		n--;
 	}
-	else
-		printf("hoi ik ben een parent process");
-	printf("%d\n", child_pid);
-	return(0);
+	return (s);
 }
+
+// int main(void)
+// {
+//     char str[50] = "Hello World";
+//
+// 	ft_memset(str, '#', 9);
+//     printf("%s \n", str);
+//     return (0);
+// }

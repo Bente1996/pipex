@@ -1,31 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/28 19:40:54 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/03/28 19:40:59 by bde-koni         ###   ########.fr       */
+/*   Created: 2024/10/30 18:55:22 by bde-koni          #+#    #+#             */
+/*   Updated: 2024/11/20 14:13:08 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdio.h>
+#include "libft.h"
 
-int	main()
+// FUNCTION: writes integer into certain file descriptor
+void	ft_putnbr_fd(int n, int fd)
 {
-	int child_pid;
+	long	n2;
+	char	c;
 
-	child_pid = 0;
-
-	child_pid = fork();
-	if (child_pid == 0)
+	n2 = (long)n;
+	c = '-';
+	if (n2 < 0)
 	{
-		printf("hoi ik ben een child process");
+		write(fd, &c, 1);
+		n2 *= -1;
 	}
-	else
-		printf("hoi ik ben een parent process");
-	printf("%d\n", child_pid);
-	return(0);
+	if (n2 >= 10)
+		ft_putnbr_fd(n2 / 10, fd);
+	c = (n2 % 10) + '0';
+	write(fd, &c, 1);
 }
+
+// int main(void)
+// {
+//     int n = 0;
+//     int fd = 1;
+//     ft_putnbr_fd(n, fd);
+//     printf("\n");
+//     return (0);
+// }

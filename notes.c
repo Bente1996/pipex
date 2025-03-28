@@ -1,0 +1,37 @@
+"
+< file1 cmd1 | cmd2 > file2
+
+1. read input file1
+2. process input using cmd1 
+3. pipe output from cmdd1 to cmd2
+4. process input using cmd2 
+5. put ourput in file2
+
+functions: open, close, read, write,
+malloc, free, perror,
+strerror, access, dup, dup2,
+execve, exit, fork, pipe,
+unlink, wait, waitpid
+
+open: open fd 
+close: close fd 
+read: read from fd 
+write: write in fd 
+malloc: reserve space 
+free: free space 
+perror: print own error message before error message
+strerror: takes error number and points to string with error message
+access: checks in code for permissions and if file exists
+dup: duplicate a fd, using lowest numbered unused fd
+dup2: duplicate a fd, specify fd
+execve: switch to new program, give new program and parameters (piping?)
+exit: exit program, close fd's and all processes
+fork: every fork call lets the parent have a child. next call everyone is parent and gets a child. 2^n
+pipe: creates a pipe
+unlink: remove specified fd
+wait: await completion (certain) processes
+waitpid: wait for the child process to change state
+
+pipefd[0] refers to the read end of the pipe. 
+pipefd[1] refers to the write end of the pipe.
+"
