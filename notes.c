@@ -1,6 +1,15 @@
 "
 < file1 cmd1 | cmd2 > file2
 
+< : read to standard output
+> : put in file instead of standard output
+
+argc[0] -> ./pipex   (your program name)
+argc[1] -> file1     (input file)
+argc[2] -> cmd1      (first command)
+argc[3] -> cmd2      (second command)
+argc[4] -> file2     (output file)
+
 1. read input file1
 2. process input using cmd1 
 3. pipe output from cmdd1 to cmd2
