@@ -6,10 +6,11 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:40:54 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/04/30 16:42:47 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:48:54 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "pipex.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -50,8 +51,11 @@ void	pipex(char *file1, char *cmd1, char *cmd2, char *file2) // parent process, 
 
 char	*find_cmd_path(char **cmd_args)
 {
-	PATH = envp;
-	get_next_line(envp); // lees PATH line voor line
+	char	*destination;
+	
+	//PATH = envp;
+	//get_next_line(envp); // lees PATH line voor line
+	return (destination);
 }
 
 void	change_program(char *cmd) // "cat -e"
