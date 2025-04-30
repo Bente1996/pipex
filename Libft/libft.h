@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 18:52:50 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/03/20 13:44:40 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:39:45 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,5 +57,6 @@ void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 size_t	ft_lencheck(long n);
 int		ft_printf(const char *print, ...);
+char	*get_next_line(int fd);
 
 #endif

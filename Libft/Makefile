@@ -41,7 +41,9 @@ handle_pointer.c \
 handle_signed.c \
 handle_unsigned.c \
 handle_hexa_low.c \
-handle_hexa_up.c
+handle_hexa_up.c \
+get_next_line.c \
+get_next_line_utils.c
 
 OBJFILES := $(SRCFILES:.c=.o)
 CFLAGS ?= -Wall -Wextra -Werror -c
