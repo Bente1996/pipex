@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:40:54 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/07 17:26:41 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/07 18:03:06 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <sys/wait.h>
 
 void	pipex(char *file1, char *cmd1, char *cmd2, char *file2, char **envp) // parent process, ** ipv *?
 {
@@ -42,9 +43,16 @@ void	pipex(char *file1, char *cmd1, char *cmd2, char *file2, char **envp) // par
 	}
 	else // doe dit in de parent process (cmd 2 and read from pipe)
 	{
+		int	status;
+		
 		dup2(pipefd[0], STDIN_FILENO); // (read end / read from fd[0] is now stdin)
 		dup2(fd2, STDOUT_FILENO); // stdout is nu fd2
 		close(pipefd[1]); // close unused write end
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			ft_printf("Child exited with this exit code: %d\n", WEXITSTATUS(status));
+		else if (WIFSIGNALED(status))
+			ft_printf("Child was killed by this signal: %d\n", WTERMSIG(status));
 		change_program(cmd2, envp);
 	}
 }
@@ -112,7 +120,7 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 	path_line = find_path_line(envp); // zoek naar PATH in envp
 	paths = ft_split(path_line, ':'); // split bij :
 	full_path = find_path(paths, cmd_args[0]);
-	execve(path_line, cmd_args, envp);	
+	execve(full_path, cmd_args, envp);	
 }
 
 int	main(int argc, char **argv, char **envp)
