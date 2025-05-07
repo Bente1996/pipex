@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/21 17:01:12 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/01/28 20:59:55 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/06 15:43:20 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ bool	nl_check(char *line)
 	return (false);
 }
 
-size_t	ft_strlen(char *str)
+size_t	ft_strlen(const char *str)
 {
 	size_t	length;
 

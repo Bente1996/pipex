@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/09 15:25:40 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/01/28 20:24:50 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/06 15:43:31 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 char	*get_next_line(int fd);
 char	*buff_to_storage(char *buffer);
 char	*storage_to_line(char *storage, char *old_line);
-size_t	ft_strlen(char *str);
+size_t	ft_strlen(const char *str);
 bool	nl_check(char *line);
 ssize_t	read_if_buff_empty(int fd, char *buffer, ssize_t bytes_read);
 char	*line_alloc(char *storage, char *old_line);
