@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:40:54 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/11 21:10:43 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/11 22:58:22 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+
 #define READ 0
 #define WRITE 1
 
@@ -47,7 +48,7 @@ pid_t	ft_waitpid(pid_t pid, int *status, int options)
 	return (pid);
 }
 
-int	open_fd(int file, int oflag)
+int	open_fd(char *file, int oflag)
 {
 	if (oflag == READ)
 		file = open(file, O_RDONLY); //read file that is first parameter
@@ -60,22 +61,24 @@ int	open_fd(int file, int oflag)
 	return (file);
 }
 
-void	child_1(int *pipefd, char *file1, char *cmd1, char **envp)
+void	child_1(int *pipefd, int file1, char *cmd1, char **envp)
 {
 	dup2(file1, STDIN_FILENO); // stdin wijst naar file1 (oldfd, newfd)  NIEUW WIJST NAR OUD
 	//printf("%d\n", fd1); // = -1 nu
 	dup2(pipefd[WRITE], STDOUT_FILENO); // stdout wijst naar write end van pipe
-	close(pipefd[READ]); // close unsused read end
-	close(pipefd[WRITE]);
+	ft_close(file1, 1); // already duped
+	ft_close(pipefd[READ], 3); // close unsused read end
+	ft_close(pipefd[WRITE], 4); // already duped
 	change_program(cmd1, envp); //geef command mee en voer uit op juiste file met execve
 }
 
-void	child_2(int *pipefd, char *file2, char *cmd2, char **envp)
+void	child_2(int *pipefd, int file2, char *cmd2, char **envp)
 {
 	dup2(pipefd[READ], STDIN_FILENO); // (read end / read from fd[0] is now stdin)
 	dup2(file2, STDOUT_FILENO); // stdout is nu fd2
-	close(pipefd[WRITE]); // close unused write end
-	close(pipefd[READ]);
+	ft_close(file2, 2); // already duped
+	ft_close(pipefd[WRITE], 4); // close unused write end
+	ft_close(pipefd[READ], 3); // already duped
 	change_program(cmd2, envp);
 }
 
@@ -85,15 +88,22 @@ void	ft_pipe(int *pipefd)
 		exit_with_failure("Pipe failed\n", 1, 1);
 }
 
-ft_close(char *file, int fd)
+void	ft_close(int file, int flag)
 {
-	if (close(file) == -1 && fd == 1)
-		exit_with_failure("Closing file1 failed\n", 1, 1);
-	else if (close(file) == -1)
-		exit_with_failure("Closing file2 failed\n", 1, 1);
+	if (close(file) == -1)
+	{
+		if (flag == 1)
+			exit_with_failure("Closing file1 failed\n", 1, 1);
+		else if (flag == 2)
+			exit_with_failure("Closing file2 failed\n", 1, 1);
+		else if (flag == 3)
+			exit_with_failure("Closing pipe[READ] failed\n", 1, 1);
+		else if (flag == 3)
+			exit_with_failre("Closing pipe[WRITE] failed\n", 1, 1);
+	}
 }
 
-void	pipex(char *file1, char *cmd1, char *cmd2, char *file2, char **envp) // parent process, ** ipv *?
+void	pipex(t_node *arguments, char **envp) // parent process, ** ipv *?
 {
 	int	pipefd[2]; // array of 2 fd's (read(0) and write(1) end)
 	pid_t	pid1;
@@ -102,19 +112,21 @@ void	pipex(char *file1, char *cmd1, char *cmd2, char *file2, char **envp) // par
 	int	fd2; //file2
 	int	status[2]; // integer die status info opslaat met behuld van macro's
 	
-	fd1 = open_fd(file1, READ);
-	fd2 = open_fd(file2, WRITE);
+	fd1 = open_fd(arguments->file1, READ);
+	fd2 = open_fd(arguments->file2, WRITE);
 	ft_pipe(&pipefd);
 	pid1 = ft_fork(); // make child
 	if (pid1 == 0) // doe dit in de child process (cmd 1 and write to pipe)
-		child_1(&pipefd, file1, cmd1, envp);
+		child_1(&pipefd, arguments->file1, arguments->cmd1, envp);
 	pid2 = ft_fork();
 	if (pid2 == 0)
-		child_2(&pipefd, file2, cmd2, envp);
+		child_2(&pipefd, arguments->file2, arguments->cmd2, envp);
+	ft_close(arguments->file1, 1);
+	ft_close(arguments->file2, 2); 
+	ft_close(pipefd[WRITE], 4);
+	ft_close(pipefd[READ], 3);
 	ft_waitpid(pid1, &status[0], 0); //& omdat je niet nummer maar adres wil meegeven
 	ft_waitpid(pid2, &status[1], 0); // doe dit in parent om error codes op te vangen van execve
-	ft_close(fd1, 1);
-	ft_close(fd2, 2);
 }
 
 char	*find_path_line(char **envp) // opzoek naar PATH= in envp
@@ -144,6 +156,28 @@ void	free_split(char **paths) // free splitted (OG) paths
 	free(paths); // free pointer to paths
 }
 
+char	*build_path(char **paths, char* current_path, char *cmd)
+{
+	char	*full_path;
+	char	*add_slash;
+
+	add_slash = ft_strjoin(current_path, "/"); // we maken een 3e string /bin + "/" = /bin/
+	if (add_slash == NULL)
+	{
+		free_split(paths);
+		exit_with_failure("Strjoin failed\n", 1, 1);
+	}
+	full_path = ft_strjoin(add_slash, cmd); // we maken een 4e string /bin/cat
+	if (full_path == NULL)
+	{
+		free(full_path);
+		free_split(paths);
+		exit_with_failure("Strjoin failed\n", 1, 1);
+	}
+	free(add_slash); // verwijder 3e string
+	return(full_path);
+}
+
 char	*find_path(char **paths, char *cmd) // vind volledige path
 {
 	int	i;
@@ -155,20 +189,7 @@ char	*find_path(char **paths, char *cmd) // vind volledige path
 	add_slash = NULL;
 	while (paths[i] != NULL) // maak volledige paths
 	{
-		add_slash = ft_strjoin(paths[i], "/"); // we maken een 3e string /bin + "/" = /bin/
-		if (!add_slash)
-		{
-			free_split(paths);
-			exit_with_failure("Strjoin failed", 1, 1);
-		}
-		full_path = ft_strjoin(add_slash, cmd); // we maken een 4e string /bin/cat
-		if (!full_path)
-		{
-			free(full_path);
-			free_split(paths);
-			exit_with_failure("Strjoin failed", 1, 1);
-		}
-		free(add_slash); // verwijder 3e string
+		full_path = build_path(paths, paths[i], cmd);
 		if (access(full_path ,X_OK) == 0) // als gevonden: geef execute recht
 		{
 			free_split(paths); // free alle OG paths, "/" hoeft niet
@@ -181,6 +202,18 @@ char	*find_path(char **paths, char *cmd) // vind volledige path
 	return (NULL); // niet gevonden
 }
 
+char	**safe_split(const char *str, char delimeter, int flag)
+{
+	if (ft_split(str, delimeter) == NULL)
+	{
+		if (flag == 0)
+			exit_with_failure("Split cmd_args failed\n", 1, 1);
+		else if (flag == 1)
+			exit_with_failure("Split paths failed\n", 1, 1);
+	}
+	return (str);
+}
+
 void	change_program(char *cmd, char **envp) // "cat -e"
 {
 	char	*path_line;
@@ -188,15 +221,11 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 	char	**paths;
 	char	*full_path;
 	
-	cmd_args = ft_split(cmd, ' '); // breek command in stukken
-	if (!cmd_args)
-		exit_with_failure("Split cmd_args failed\n", 1, 1);
+	cmd_args = safe_split(cmd, ' ', 0); // breek command in stukken
 	path_line = find_path_line(envp); // zoek naar PATH in envp
-	paths = ft_split(path_line, ':'); // split bij :
-	if (!paths)
-		exit_with_failure("Split paths failed\n", 1, 1);
+	paths = safe_split(path_line, ':', 1); // split bij :
 	full_path = find_path(paths, cmd_args[0]);
-	if (!full_path)
+	if (full_path == NULL)
 	{
 		free_split(cmd_args);
 		exit_with_failure("Command not found\n", 0, 127);
@@ -205,15 +234,20 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 	{
 		free(full_path);
 		free_split(cmd_args);
-		exit(1);
+		exit_with_failure("Execve failed\n", 1, 1);
 	}
 }
 
 int	main(int argc, char **argv, char **envp)
 {
+	t_node	arguments;
+
 	if (argc != 5)
 		exit_with_failure("Invalid amount of arguments\n", 0, 2);
-	
-	pipex(argv[1], argv[2], argv[3], argv[4], envp);
+	arguments.file1 = argv[1];
+	arguments.cmd1 = argv[2];
+	arguments.cmd2 = argv[3];
+	arguments.file2 = argv[4];
+	pipex(&arguments, envp);
 	return(0);
 }
