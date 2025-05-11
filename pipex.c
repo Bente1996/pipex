@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:40:54 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/11 20:37:06 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/11 21:10:43 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,9 @@ int	open_fd(int file, int oflag)
 	else
 		file = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644); // write in file that is last parameter
 	if (file < 0 && oflag == READ)
-		exit_with_failure("opening file1 failed\n", 1, 1);
+		exit_with_failure("Opening file1 failed\n", 1, 1);
 	else if (file < 0)
-		exit_with_failure("opening file2 failed\n", 1, 1);
+		exit_with_failure("Opening file2 failed\n", 1, 1);
 	return (file);
 }
 
@@ -79,6 +79,20 @@ void	child_2(int *pipefd, char *file2, char *cmd2, char **envp)
 	change_program(cmd2, envp);
 }
 
+void	ft_pipe(int *pipefd)
+{
+	if (pipe(pipefd) == -1) // create pipe ([0] and [1]) (pipe is zelfde in beide childs)
+		exit_with_failure("Pipe failed\n", 1, 1);
+}
+
+ft_close(char *file, int fd)
+{
+	if (close(file) == -1 && fd == 1)
+		exit_with_failure("Closing file1 failed\n", 1, 1);
+	else if (close(file) == -1)
+		exit_with_failure("Closing file2 failed\n", 1, 1);
+}
+
 void	pipex(char *file1, char *cmd1, char *cmd2, char *file2, char **envp) // parent process, ** ipv *?
 {
 	int	pipefd[2]; // array of 2 fd's (read(0) and write(1) end)
@@ -90,8 +104,7 @@ void	pipex(char *file1, char *cmd1, char *cmd2, char *file2, char **envp) // par
 	
 	fd1 = open_fd(file1, READ);
 	fd2 = open_fd(file2, WRITE);
-	if (pipe(pipefd) == -1) // create pipe ([0] and [1]) (pipe is zelfde in beide childs)
-		exit_with_failure("pipe failed\n", 1, 1);
+	ft_pipe(&pipefd);
 	pid1 = ft_fork(); // make child
 	if (pid1 == 0) // doe dit in de child process (cmd 1 and write to pipe)
 		child_1(&pipefd, file1, cmd1, envp);
@@ -100,8 +113,8 @@ void	pipex(char *file1, char *cmd1, char *cmd2, char *file2, char **envp) // par
 		child_2(&pipefd, file2, cmd2, envp);
 	ft_waitpid(pid1, &status[0], 0); //& omdat je niet nummer maar adres wil meegeven
 	ft_waitpid(pid2, &status[1], 0); // doe dit in parent om error codes op te vangen van execve
-	close(fd1);
-	close(fd2);
+	ft_close(fd1, 1);
+	ft_close(fd2, 2);
 }
 
 char	*find_path_line(char **envp) // opzoek naar PATH= in envp
@@ -146,14 +159,14 @@ char	*find_path(char **paths, char *cmd) // vind volledige path
 		if (!add_slash)
 		{
 			free_split(paths);
-			exit_with_failure("strjoin malloc fail", 1, 1);
+			exit_with_failure("Strjoin failed", 1, 1);
 		}
 		full_path = ft_strjoin(add_slash, cmd); // we maken een 4e string /bin/cat
 		if (!full_path)
 		{
 			free(full_path);
 			free_split(paths);
-			exit_with_failure("strjoin malloc fail", 1, 1);
+			exit_with_failure("Strjoin failed", 1, 1);
 		}
 		free(add_slash); // verwijder 3e string
 		if (access(full_path ,X_OK) == 0) // als gevonden: geef execute recht
@@ -177,16 +190,16 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 	
 	cmd_args = ft_split(cmd, ' '); // breek command in stukken
 	if (!cmd_args)
-		exit_with_failure("split cmd_args failed\n", 1, 1);
+		exit_with_failure("Split cmd_args failed\n", 1, 1);
 	path_line = find_path_line(envp); // zoek naar PATH in envp
 	paths = ft_split(path_line, ':'); // split bij :
 	if (!paths)
-		exit_with_failure("split paths failed\n", 1, 1);
+		exit_with_failure("Split paths failed\n", 1, 1);
 	full_path = find_path(paths, cmd_args[0]);
 	if (!full_path)
 	{
 		free_split(cmd_args);
-		exit_with_failure("command not found\n", 0, 127);
+		exit_with_failure("Command not found\n", 0, 127);
 	}
 	if (execve(full_path, cmd_args, envp) == -1) // niet nodig on succeed want dan wordt alles gewiped door nieuwe programma
 	{
@@ -199,7 +212,8 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 int	main(int argc, char **argv, char **envp)
 {
 	if (argc != 5)
-		exit_with_failure("invalid amount of arguments\n", 0, 2);
+		exit_with_failure("Invalid amount of arguments\n", 0, 2);
+	
 	pipex(argv[1], argv[2], argv[3], argv[4], envp);
 	return(0);
 }
