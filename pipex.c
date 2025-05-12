@@ -6,19 +6,11 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:40:54 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/12 14:30:05 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:34:50 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <unistd.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/wait.h>
-
-#define READ 0
-#define WRITE 1
-
 
 void	pipex(t_node *arguments, char **envp) // parent process, ** ipv *?
 {
@@ -31,38 +23,36 @@ void	pipex(t_node *arguments, char **envp) // parent process, ** ipv *?
 	
 	fd1 = ft_open(arguments->file1, READ);
 	fd2 = ft_open(arguments->file2, WRITE);
-	ft_pipe(&pipefd);
+	ft_pipe(pipefd);
 	pid1 = ft_fork(); // make child
 	if (pid1 == 0) // doe dit in de child process (cmd 1 and write to pipe)
-	child_1(&pipefd, arguments->file1, arguments->cmd1, envp);
+		child_1(pipefd, fd1, arguments->cmd1, envp);
 	pid2 = ft_fork();
 	if (pid2 == 0)
-	child_2(&pipefd, arguments->file2, arguments->cmd2, envp);
-	ft_close(arguments->file1, 1);
-	ft_close(arguments->file2, 2); 
+		child_2(pipefd, fd2, arguments->cmd2, envp);
+	ft_close(fd1, 1);
+	ft_close(fd2, 2); 
 	ft_close(pipefd[WRITE], 4);
 	ft_close(pipefd[READ], 3);
 	ft_waitpid(pid1, &status[0], 0); //& omdat je niet nummer maar adres wil meegeven
 	ft_waitpid(pid2, &status[1], 0); // doe dit in parent om error codes op te vangen van execve
 }
 
-void	child_1(int *pipefd, int file1, char *cmd1, char **envp)
+void	child_1(int *pipefd, int fd1, char *cmd1, char **envp)
 {
-	dup2(file1, STDIN_FILENO); // stdin wijst naar file1 (oldfd, newfd)  NIEUW WIJST NAR OUD
+	dup2(fd1, STDIN_FILENO); // stdin wijst naar file1 (oldfd, newfd)  NIEUW WIJST NAR OUD
 	//printf("%d\n", fd1); // = -1 nu
 	dup2(pipefd[WRITE], STDOUT_FILENO); // stdout wijst naar write end van pipe
-	ft_close(file1, 1); // already duped
+	ft_close(fd1, 1); // already duped
 	ft_close(pipefd[READ], 3); // close unsused read end
-	ft_close(pipefd[WRITE], 4); // already duped
 	change_program(cmd1, envp); //geef command mee en voer uit op juiste file met execve
 }
 
-void	child_2(int *pipefd, int file2, char *cmd2, char **envp)
+void	child_2(int *pipefd, int fd2, char *cmd2, char **envp)
 {
 	dup2(pipefd[READ], STDIN_FILENO); // (read end / read from fd[0] is now stdin)
-	dup2(file2, STDOUT_FILENO); // stdout is nu fd2
-	ft_close(file2, 2); // already duped
+	dup2(fd2, STDOUT_FILENO); // stdout is nu fd2
+	ft_close(fd2, 2); // already duped
 	ft_close(pipefd[WRITE], 4); // close unused write end
-	ft_close(pipefd[READ], 3); // already duped
 	change_program(cmd2, envp);
 }

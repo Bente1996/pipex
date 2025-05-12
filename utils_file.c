@@ -6,36 +6,40 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:21:04 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/12 14:41:06 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:25:51 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <fcntl.h>
+#include <stdio.h>
 
 int	ft_open(char *file, int oflag)
 {
+	int	fd;
+
 	if (oflag == READ)
-		file = open(file, O_RDONLY); //read file that is first parameter
+		fd = open(file, O_RDONLY); //read fd that is first parameter
 	else
-		file = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644); // write in file that is last parameter
-	if (file < 0 && oflag == READ)
-		exit_with_failure("Opening file1 failed\n", 1, 1);
-	else if (file < 0)
-		exit_with_failure("Opening file2 failed\n", 1, 1);
-	return (file);
+		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644); // write in fd that is last parameter
+	if (fd < 0 && oflag == READ)
+		exit_with_failure("Opening fd1 failed\n", 1, 1);
+	else if (fd < 0)
+		exit_with_failure("Opening fd2 failed\n", 1, 1);
+	return (fd);
 }
 
-void	ft_close(int file, int flag)
+void	ft_close(int fd, int flag)
 {
-	if (close(file) == -1)
+	if (close(fd) == -1)
 	{
 		if (flag == 1)
-			exit_with_failure("Closing file1 failed\n", 1, 1);
+			exit_with_failure("Closing fd1 failed\n", 1, 1);
 		else if (flag == 2)
-			exit_with_failure("Closing file2 failed\n", 1, 1);
+			exit_with_failure("Closing fd2 failed\n", 1, 1);
 		else if (flag == 3)
 			exit_with_failure("Closing pipe[READ] failed\n", 1, 1);
 		else if (flag == 3)
-			exit_with_failre("Closing pipe[WRITE] failed\n", 1, 1);
+			exit_with_failure("Closing pipe[WRITE] failed\n", 1, 1);
 	}
 }

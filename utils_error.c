@@ -6,11 +6,12 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:41:09 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/12 14:41:31 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:08:33 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <stdio.h>
 
 void	exit_with_failure(char *message, int use_perror, int error_code)
 {
