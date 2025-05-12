@@ -1,6 +1,12 @@
 EXEC_NAME := pipex
 HEADERFILES := Libft/libft.h Libft/ft_printf.h Libft/get_next_line.h pipex.h
-SRCFILES := pipex.c
+SRCFILES := pipex.c \
+commands.c \
+utils_file.c \
+utils_process.c \
+utils_string.c \
+utils_error.c \
+main.c
 OBJFILES := $(SRCFILES:.c=.o)
 CFLAGS ?= -g -Wall -Wextra -Werror -I./Libft
 LIBFT_A := Libft/libft.a
