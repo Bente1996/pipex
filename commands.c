@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:25:12 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/13 18:12:05 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/13 18:37:42 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 	char	**paths;
 	char	*full_path;
 	
-	if (ft_strchr(cmd, 39) == NULL) // als geen ' ' 
+	if (ft_strchr(cmd, 39) == NULL) // als geen ' 
 		cmd_args = safe_split(cmd, ' ', 0); // breek command in stukken
 	else
-		
+		cmd_args = handle_quotes(cmd);
 	if (ft_strchr(cmd_args[0], '/') != NULL) // als het absolute path al gegeven is: strdup
 		full_path = ft_strdup(cmd_args[0]);
 	else
@@ -35,6 +35,35 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 		free_strings(cmd_args, full_path, 3);
 	if (execve(full_path, cmd_args, envp) == -1) // niet nodig on succeed want dan wordt alles gewiped door nieuwe programma
 		free_strings(cmd_args, full_path, 4);
+}
+
+char	**handle_quotes(char *cmd)
+{
+	char	**cmd_args;
+	int	i;
+
+	i = 0;
+	while (cmd[i] != '\0')
+	{
+		if (cmd[i] == 39) // ' gevonden
+			cmd_args[0] = no_split(&cmd[i]); // einde van no split deel is cmd_args[0], handle ook nog cmd_args[1]!
+		i++;
+	}
+	return(cmd_args);
+}
+
+char	*no_split(char *quote)
+{
+	int	i;
+
+	i = 0;
+	while (quote[i] != '\0')
+	{
+		if (quote[i] == 39)
+			return (&quote[i]); // to handle quotes function
+		i++;
+	}
+	return (NULL); // geen tweede quote gevonden, doe iets: ?
 }
 
 char	*find_path_line(char **envp) // opzoek naar PATH= in envp
