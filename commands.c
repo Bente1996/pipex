@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:25:12 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/12 16:54:45 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/13 18:12:05 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,18 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 	char	**paths;
 	char	*full_path;
 	
-	cmd_args = safe_split(cmd, ' ', 0); // breek command in stukken
-	path_line = find_path_line(envp); // zoek naar PATH in envp
-	paths = safe_split(path_line, ':', 1); // split bij :
-	full_path = find_path(paths, cmd_args[0]);
+	if (ft_strchr(cmd, 39) == NULL) // als geen ' ' 
+		cmd_args = safe_split(cmd, ' ', 0); // breek command in stukken
+	else
+		
+	if (ft_strchr(cmd_args[0], '/') != NULL) // als het absolute path al gegeven is: strdup
+		full_path = ft_strdup(cmd_args[0]);
+	else
+	{
+		path_line = find_path_line(envp); // zoek naar PATH in envp
+		paths = safe_split(path_line, ':', 1); // split bij :
+		full_path = find_path(paths, cmd_args[0]);
+	}
 	if (full_path == NULL)
 		free_strings(cmd_args, full_path, 3);
 	if (execve(full_path, cmd_args, envp) == -1) // niet nodig on succeed want dan wordt alles gewiped door nieuwe programma
@@ -71,7 +79,7 @@ char	*find_path(char **paths, char *cmd) // vind volledige path
 	while (paths[i] != NULL) // maak volledige paths
 	{
 		full_path = build_path(paths, paths[i], cmd);
-		if (access(full_path ,X_OK) == 0) // als gevonden: geef execute recht
+		if (access(full_path ,X_OK) == 0) // als gevonden: geef execute recht, F_OK????????
 		{
 			free_split(paths); // free alle OG paths, "/" hoeft niet
 			return (full_path);

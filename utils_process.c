@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:37:12 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/12 17:03:31 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/13 18:13:32 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,9 @@ pid_t	ft_waitpid(pid_t pid, int *status, int options)
 	else if (WIFSIGNALED(*status))
 		ft_printf("Child was killed by this signal: %d\n", WTERMSIG(*status));
 	return (pid);
+}
+
+ft_dup2()
+{
+	
 }
