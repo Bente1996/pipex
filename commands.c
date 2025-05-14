@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:25:12 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/13 18:37:42 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/14 15:50:48 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,33 +37,51 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 		free_strings(cmd_args, full_path, 4);
 }
 
-char	**handle_quotes(char *cmd)
+char	**handle_quotes(char *cmd) // "grep 'a    b'"
 {
 	char	**cmd_args;
 	int	i;
+	int	j;
 
 	i = 0;
-	while (cmd[i] != '\0')
-	{
-		if (cmd[i] == 39) // ' gevonden
-			cmd_args[0] = no_split(&cmd[i]); // einde van no split deel is cmd_args[0], handle ook nog cmd_args[1]!
+	j = 0;
+	cmd_args = malloc(sizeof(char *) * 3); // 3 pointers naar strings: cmd, argument, NULL
+	if (cmd_args == NULL)
+		return (NULL);
+	while (cmd[i] == ' ')
 		i++;
+	cmd_args[0][j] = cmd[i]; // make "grep"
+	if (cmd[i] == ' ') // ' gevonden
+	{
+		j++;
+		cmd_args[0][j] = '\0';
+		cmd_args[0] = ft_strdup(cmd_args[0]); // malloced "grep"
+	if (cmd_args[0] == NULL)
+		return (NULL);
 	}
+		while (cmd[i] == ' ')
+			i++;
+	if (cmd[i] == 39)
+	{
+		j = 0;
+		i++;
+		while (cmd[i] != '\0' && cmd[i] != 39)
+		{
+			cmd_args[1][j] = cmd[i];
+			i++;
+			j++;
+			if (cmd[i] == 39)
+				break;
+			if (cmd[i] == '\0')
+				return (NULL); // geen tweede ' gevonden: FOUT EXIT, free dingen
+		}
+			cmd_args[1][j] = '\0';
+			cmd_args[1] = ft_strdup(cmd_args[1]); //
+			if (cmd_args[1] == NULL)
+				return (NULL);
+		}
+	i++;
 	return(cmd_args);
-}
-
-char	*no_split(char *quote)
-{
-	int	i;
-
-	i = 0;
-	while (quote[i] != '\0')
-	{
-		if (quote[i] == 39)
-			return (&quote[i]); // to handle quotes function
-		i++;
-	}
-	return (NULL); // geen tweede quote gevonden, doe iets: ?
 }
 
 char	*find_path_line(char **envp) // opzoek naar PATH= in envp
