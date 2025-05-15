@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: coding_frog <coding_frog@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:25:12 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/14 15:50:48 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/15 19:55:01 by coding_frog      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,37 +50,30 @@ char	**handle_quotes(char *cmd) // "grep 'a    b'"
 		return (NULL);
 	while (cmd[i] == ' ')
 		i++;
-	cmd_args[0][j] = cmd[i]; // make "grep"
-	if (cmd[i] == ' ') // ' gevonden
-	{
+	j = i;
+	while (cmd[j] && cmd[j] != ' ')
 		j++;
-		cmd_args[0][j] = '\0';
-		cmd_args[0] = ft_strdup(cmd_args[0]); // malloced "grep"
+	cmd_args[0] = ft_substr(cmd, i, j-i); // make eerste substring "grep"
 	if (cmd_args[0] == NULL)
 		return (NULL);
-	}
-		while (cmd[i] == ' ')
-			i++;
-	if (cmd[i] == 39)
-	{
-		j = 0;
+	i = j;
+	while (cmd[i] == ' ')
 		i++;
-		while (cmd[i] != '\0' && cmd[i] != 39)
-		{
-			cmd_args[1][j] = cmd[i];
-			i++;
+	if (cmd[i] == 39) // ' gevonden
+	{
+		i++;
+		j = i;
+		while (cmd[i] != '\0' && cmd[i] != 39) // zoek tweede substring
 			j++;
-			if (cmd[i] == 39)
-				break;
-			if (cmd[i] == '\0')
-				return (NULL); // geen tweede ' gevonden: FOUT EXIT, free dingen
-		}
-			cmd_args[1][j] = '\0';
-			cmd_args[1] = ft_strdup(cmd_args[1]); //
-			if (cmd_args[1] == NULL)
-				return (NULL);
-		}
-	i++;
+		if (cmd[j] == '\0') // geen tweede quote gevonden
+			return (free(cmd_args[0]), free(cmd_args), NULL); // geen tweede ' gevonden: FOUT EXIT, free dingen
+		cmd_args[1] = ft_substr(cmd, i, j-i); // alloceer
+		if (cmd_args[1] == NULL)
+			return (free(cmd_args[0]), free(cmd_args), NULL);
+	}
+	else
+		cmd_args[1] = NULL; // toch geen quote gevonden ..
+	cmd_args[2] = NULL;
 	return(cmd_args);
 }
 
