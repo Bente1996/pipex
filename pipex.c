@@ -40,9 +40,9 @@ void	pipex(t_node *arguments, char **envp) // parent process, ** ipv *?
 
 void	child_1(int *pipefd, int fd1, char *cmd1, char **envp)
 {
-	dup2(fd1, STDIN_FILENO); // stdin wijst naar file1 (oldfd, newfd)  NIEUW WIJST NAR OUD
+	ft_dup2(fd1, STDIN_FILENO); // stdin wijst naar file1 (oldfd, newfd)  NIEUW WIJST NAR OUD
 	//printf("%d\n", fd1); // = -1 nu
-	dup2(pipefd[WRITE], STDOUT_FILENO); // stdout wijst naar write end van pipe
+	ft_dup2(pipefd[WRITE], STDOUT_FILENO); // stdout wijst naar write end van pipe
 	ft_close(fd1, 1); // already duped
 	ft_close(pipefd[READ], 3); // close unsused read end
 	change_program(cmd1, envp); //geef command mee en voer uit op juiste file met execve
@@ -50,8 +50,8 @@ void	child_1(int *pipefd, int fd1, char *cmd1, char **envp)
 
 void	child_2(int *pipefd, int fd2, char *cmd2, char **envp)
 {
-	dup2(pipefd[READ], STDIN_FILENO); // (read end / read from fd[0] is now stdin)
-	dup2(fd2, STDOUT_FILENO); // stdout is nu fd2
+	ft_dup2(pipefd[READ], STDIN_FILENO); // (read end / read from fd[0] is now stdin)
+	ft_dup2(fd2, STDOUT_FILENO); // stdout is nu fd2
 	ft_close(fd2, 2); // already duped
 	ft_close(pipefd[WRITE], 4); // close unused write end
 	change_program(cmd2, envp);

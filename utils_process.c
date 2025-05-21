@@ -35,11 +35,12 @@ pid_t	ft_waitpid(pid_t pid, int *status, int options)
 	if (WIFEXITED(*status)) // * want kijken naar de waarde op het adres
 		ft_printf("Child exited with this exit code: %d\n", WEXITSTATUS(*status));
 	else if (WIFSIGNALED(*status))
-		ft_printf("Child was killed by this signal: %d\n", WTERMSIG(*status));
+		ft_printf("Child was killed by this signal: %d\n", WTERMSIG(*status)); // weg
 	return (pid);
 }
 
-ft_dup2()
+void	ft_dup2(int oldfd, int newfd)
 {
-	
+	if (dup2(oldfd, newfd) == -1)
+		exit_with_failure("Dup2 failed\n", 1, 1);
 }

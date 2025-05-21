@@ -40,6 +40,7 @@ int		ft_open(char *file, int oflag);
 void	ft_close(int fd, int flag);
 pid_t	ft_fork();
 void	ft_pipe(int *pipefd);
+void	ft_dup2(int oldfd, int newfd);
 pid_t	ft_waitpid(pid_t pid, int *status, int options);
 char	**safe_split(char *str, char delimeter, int flag);
 void	free_split(char **paths);

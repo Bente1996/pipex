@@ -19,10 +19,7 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 	char	**paths;
 	char	*full_path;
 	
-	if (ft_strchr(cmd, 39) == NULL) // als geen ' 
-		cmd_args = safe_split(cmd, ' ', 0); // breek command in stukken
-	else
-		cmd_args = handle_quotes(cmd);
+	cmd_args = safe_split(cmd, ' ', 0); // breek command in stukken
 	if (ft_strchr(cmd_args[0], '/') != NULL) // als het absolute path al gegeven is: strdup
 		full_path = ft_strdup(cmd_args[0]);
 	else
@@ -35,46 +32,6 @@ void	change_program(char *cmd, char **envp) // "cat -e"
 		free_strings(cmd_args, full_path, 3);
 	if (execve(full_path, cmd_args, envp) == -1) // niet nodig on succeed want dan wordt alles gewiped door nieuwe programma
 		free_strings(cmd_args, full_path, 4);
-}
-
-char	**handle_quotes(char *cmd) // "grep 'a    b'"
-{
-	char	**cmd_args;
-	int	i;
-	int	j;
-
-	i = 0;
-	j = 0;
-	cmd_args = malloc(sizeof(char *) * 3); // 3 pointers naar strings: cmd, argument, NULL
-	if (cmd_args == NULL)
-		return (NULL);
-	while (cmd[i] == ' ')
-		i++;
-	j = i;
-	while (cmd[j] && cmd[j] != ' ')
-		j++;
-	cmd_args[0] = ft_substr(cmd, i, j-i); // make eerste substring "grep"
-	if (cmd_args[0] == NULL)
-		return (NULL);
-	i = j;
-	while (cmd[i] == ' ')
-		i++;
-	if (cmd[i] == 39) // ' gevonden
-	{
-		i++;
-		j = i;
-		while (cmd[i] != '\0' && cmd[i] != 39) // zoek tweede substring
-			j++;
-		if (cmd[j] == '\0') // geen tweede quote gevonden
-			return (free(cmd_args[0]), free(cmd_args), NULL); // geen tweede ' gevonden: FOUT EXIT, free dingen
-		cmd_args[1] = ft_substr(cmd, i, j-i); // alloceer
-		if (cmd_args[1] == NULL)
-			return (free(cmd_args[0]), free(cmd_args), NULL);
-	}
-	else
-		cmd_args[1] = NULL; // toch geen quote gevonden ..
-	cmd_args[2] = NULL;
-	return(cmd_args);
 }
 
 char	*find_path_line(char **envp) // opzoek naar PATH= in envp
@@ -109,13 +66,11 @@ char	*build_path(char **paths, char* current_path, char *cmd)
 
 char	*find_path(char **paths, char *cmd) // vind volledige path
 {
-	int	i;
 	char	*full_path;
-	char	*add_slash;
+	int	i;
 
 	i = 0;
 	full_path = NULL;
-	add_slash = NULL;
 	while (paths[i] != NULL) // maak volledige paths
 	{
 		full_path = build_path(paths, paths[i], cmd);
