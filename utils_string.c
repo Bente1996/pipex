@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:35:49 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/12 17:07:43 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/23 15:43:09 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 char	**safe_split(char *str, char delimeter, int flag)
 {
 	char	**split;
-	
+
 	split = ft_split(str, delimeter);
 	if (split == NULL)
 	{
@@ -27,7 +27,7 @@ char	**safe_split(char *str, char delimeter, int flag)
 	return (split);
 }
 
-void	free_split(char **paths) // free splitted (OG) paths
+void	free_split(char **paths)
 {
 	int	i;
 
@@ -37,7 +37,7 @@ void	free_split(char **paths) // free splitted (OG) paths
 		free(paths[i]);
 		i++;
 	}
-	free(paths); // free pointer to paths
+	free(paths);
 }
 
 void	free_strings(char **strings, char *string, int flag)

@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:23:27 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/12 14:45:25 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/23 15:44:48 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,5 +23,5 @@ int	main(int argc, char **argv, char **envp)
 	arguments.cmd2 = argv[3];
 	arguments.file2 = argv[4];
 	pipex(&arguments, envp);
-	return(0);
+	return (0);
 }

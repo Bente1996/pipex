@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:21:04 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/12 17:25:51 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/05/23 15:37:37 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ int	ft_open(char *file, int oflag)
 	int	fd;
 
 	if (oflag == READ)
-		fd = open(file, O_RDONLY); //read fd that is first parameter
+		fd = open(file, O_RDONLY);
 	else
-		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644); // write in fd that is last parameter
+		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0 && oflag == READ)
 		exit_with_failure("Opening fd1 failed\n", 1, 1);
 	else if (fd < 0)
