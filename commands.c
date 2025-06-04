@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:25:12 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/05/23 15:40:16 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/06/04 16:18:37 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,11 @@ char	*build_path(char **paths, char *current_path, char *cmd)
 
 char	*find_path(char **paths, char *cmd)
 {
-	int		i;
 	char	*full_path;
-	char	*add_slash;
+	int	i;
 
 	i = 0;
 	full_path = NULL;
-	add_slash = NULL;
 	while (paths[i] != NULL)
 	{
 		full_path = build_path(paths, paths[i], cmd);

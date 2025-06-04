@@ -6,7 +6,7 @@
 /*   By: bde-koni <bde-koni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:40:44 by bde-koni          #+#    #+#             */
-/*   Updated: 2025/06/04 16:04:12 by bde-koni         ###   ########.fr       */
+/*   Updated: 2025/06/04 16:19:37 by bde-koni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int		ft_open(char *file, int oflag);
 void	ft_close(int fd, int flag);
 pid_t	ft_fork();
 void	ft_pipe(int *pipefd);
-void	ft_dup2(int old, int new);
+void	ft_dup2(int oldfd, int newfd);
 pid_t	ft_waitpid(pid_t pid, int *status, int options);
 char	**safe_split(char *str, char delimeter, int flag);
 void	free_split(char **paths);
